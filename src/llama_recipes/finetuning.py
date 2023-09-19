@@ -122,8 +122,12 @@ def main(**kwargs):
 
     # Load the tokenizer and add special tokens
     tokenizer = AutoTokenizer.from_pretrained(train_config.model_name)
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.pad_token_id = tokenizer.eos_token_id
+    # Amir: specific to pie
+    tokenizer.pad_token_id = 0
+    tokenizer.padding_size = "left" # allow batched inference
+    # Rime
+    # tokenizer.pad_token = tokenizer.eos_token
+    # tokenizer.pad_token_id = tokenizer.eos_token_id
     if train_config.use_peft:
         peft_config = generate_peft_config(train_config, kwargs)
         model = get_peft_model(model, peft_config)
