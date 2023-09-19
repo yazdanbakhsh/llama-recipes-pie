@@ -17,7 +17,7 @@ from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import DistributedSampler
 from transformers import (
     LlamaForCausalLM,
-    LlamaTokenizer,
+    AutoTokenizer,
     LlamaConfig,
     default_data_collator,
 )
@@ -121,13 +121,9 @@ def main(**kwargs):
         model.to(torch.bfloat16)
 
     # Load the tokenizer and add special tokens
-    tokenizer = LlamaTokenizer.from_pretrained(train_config.model_name)
-    tokenizer.add_special_tokens(
-            {
-
-                "pad_token": "<PAD>",
-            }
-        )
+    tokenizer = AutoTokenizer.from_pretrained(train_config.model_name)
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = tokenizer.eos_token_id
     if train_config.use_peft:
         peft_config = generate_peft_config(train_config, kwargs)
         model = get_peft_model(model, peft_config)
@@ -177,7 +173,7 @@ def main(**kwargs):
         split="test",
     )
     if not train_config.enable_fsdp or rank == 0:
-            print(f"--> Validation Set Length = {len(dataset_val)}")
+        print(f"--> Validation Set Length = {len(dataset_val)}")
 
     train_sampler = None
     val_sampler = None
