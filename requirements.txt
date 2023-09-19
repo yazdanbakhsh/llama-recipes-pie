@@ -7,7 +7,7 @@ black[jupyter]
 datasets
 fire
 peft
-git+https://github.com/huggingface/transformers.git@main
+transformers>=4.31.0
 sentencepiece
 py7zr
 scipy
